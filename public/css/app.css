@@ -1,0 +1,200 @@
+/* =========================================================
+   DMS ERP — Ridneel Trade International
+   Custom theme layer on top of Bootstrap 5.3 (which already
+   ships CSS-variable based dark mode via [data-bs-theme]).
+   ========================================================= */
+
+:root {
+  --brand-primary: #0d6efd;
+  --brand-primary-dark: #0b5ed7;
+  --sidebar-width: 260px;
+  --topbar-height: 64px;
+  --brand-success: #198754;
+  --brand-danger: #dc3545;
+  --brand-warning: #ffc107;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Hind Siliguri', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--bs-tertiary-bg);
+}
+
+/* ---------- Layout shell ---------- */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background-color: var(--bs-body-bg);
+  border-right: 1px solid var(--bs-border-color);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+  overflow-y: auto;
+  transition: transform .2s ease-in-out;
+}
+
+.main-content {
+  flex-grow: 1;
+  margin-left: var(--sidebar-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: var(--topbar-height);
+  background-color: var(--bs-body-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.page-body {
+  padding: 1.5rem;
+  flex-grow: 1;
+}
+
+.sidebar-brand {
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.sidebar-brand .brand-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--brand-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.nav-section-title {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--bs-secondary-color);
+  padding: .9rem 1.25rem .35rem;
+}
+
+.sidebar .nav-link {
+  color: var(--bs-body-color);
+  padding: .55rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  border-radius: 0;
+  font-size: .92rem;
+}
+
+.sidebar .nav-link i {
+  width: 20px;
+  text-align: center;
+  opacity: .8;
+}
+
+.sidebar .nav-link:hover {
+  background-color: var(--bs-tertiary-bg);
+}
+
+.sidebar .nav-link.active {
+  background-color: rgba(13, 110, 253, .12);
+  color: var(--brand-primary);
+  font-weight: 600;
+  border-right: 3px solid var(--brand-primary);
+}
+
+/* ---------- Stat cards ---------- */
+.stat-card {
+  border: 1px solid var(--bs-border-color);
+  border-radius: .75rem;
+  background: var(--bs-body-bg);
+  padding: 1.25rem;
+}
+
+.stat-card .stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: .65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+/* ---------- Auth (login) screen ---------- */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  padding: 1.5rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 1rem;
+  border: none;
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.25);
+}
+
+/* ---------- Dark mode tweaks (Bootstrap handles most via data-bs-theme) ---------- */
+[data-bs-theme="dark"] .auth-wrapper {
+  background: linear-gradient(135deg, #133a7c 0%, #0a1e3f 100%);
+}
+
+[data-bs-theme="dark"] .sidebar .nav-link.active {
+  background-color: rgba(13, 110, 253, .22);
+}
+
+/* ---------- Mobile responsive ---------- */
+@media (max-width: 991.98px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.show {
+    transform: translateX(0);
+  }
+  .main-content {
+    margin-left: 0;
+  }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 1025;
+  }
+  .sidebar-backdrop.show {
+    display: block;
+  }
+}
+
+.table-responsive-card {
+  overflow-x: auto;
+}
+
+.badge-status-active { background-color: var(--brand-success); }
+.badge-status-inactive { background-color: var(--bs-secondary); }
+.badge-status-suspended { background-color: var(--brand-danger); }

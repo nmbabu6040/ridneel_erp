@@ -1,0 +1,17 @@
+<?php
+/**
+ * LARAVEL 10 SETUP ONLY (skip if you're on Laravel 11/12 — use
+ * routes/console.php.snippet instead)
+ * -----------------------------------------------------------------
+ * In your existing app/Console/Kernel.php, add this inside the
+ * schedule(Schedule $schedule) method:
+ *
+ *   protected function schedule(Schedule $schedule): void
+ *   {
+ *       $schedule->command('app:send-daily-summary')->dailyAt('23:50');
+ *       $schedule->command('app:send-overdue-reminders')->dailyAt('09:00');
+ *   }
+ *
+ * Commands under app/Console/Commands/ are auto-discovered by Laravel,
+ * so no further registration is needed for the commands themselves.
+ */

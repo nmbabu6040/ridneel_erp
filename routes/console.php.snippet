@@ -1,0 +1,16 @@
+<?php
+/**
+ * LARAVEL 11 / 12 SETUP ONLY
+ * -----------------------------------------------------------------
+ * Add these two lines to your existing routes/console.php (Laravel 11+
+ * ships this file with just the `inspire` Artisan command in it by
+ * default — just append below that).
+ */
+
+use Illuminate\Support\Facades\Schedule;
+
+// Daily business summary — change the time to suit (24h format).
+Schedule::command('app:send-daily-summary')->dailyAt('23:50');
+
+// Overdue balance reminder — runs every morning.
+Schedule::command('app:send-overdue-reminders')->dailyAt('09:00');

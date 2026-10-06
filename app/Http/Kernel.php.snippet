@@ -1,0 +1,24 @@
+<?php
+/**
+ * LARAVEL 10 SETUP ONLY (skip this file if you're on Laravel 11/12 —
+ * use bootstrap/app.php.snippet instead)
+ * -----------------------------------------------------------------
+ * In your existing app/Http/Kernel.php:
+ *
+ * 1) Add App\Http\Middleware\SetLocale::class to the 'web' group array:
+ *
+ *   protected $middlewareGroups = [
+ *       'web' => [
+ *           ...
+ *           \App\Http\Middleware\SetLocale::class,
+ *       ],
+ *   ];
+ *
+ * 2) Add the 'permission' alias to $middlewareAliases (or
+ *    $routeMiddleware on older 10.x releases):
+ *
+ *   protected $middlewareAliases = [
+ *       ...
+ *       'permission' => \App\Http\Middleware\CheckPermission::class,
+ *   ];
+ */
