@@ -106,6 +106,9 @@
                 <a href="{{ route('admin.notifications.index') }}" class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
                     <i class="bi bi-envelope-gear"></i> {{ __('app.notification_settings') }}
                 </a>
+                <a href="{{ route('admin.backups.index') }}" class="nav-link {{ request()->routeIs('admin.backups.*') ? 'active' : '' }}">
+                    <i class="bi bi-database-fill-down"></i> {{ __('app.backups') }}
+                </a>
             @endcan
         @endif
     </nav>

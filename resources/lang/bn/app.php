@@ -406,4 +406,49 @@ return [
     'email_overdue_subject' => 'বকেয়া রিমাইন্ডার — Ridneel DMS ERP',
     'email_daily_summary_subject' => 'দৈনিক ব্যবসায়িক সারসংক্ষেপ',
     'email_test_subject' => 'টেস্ট ইমেইল — Ridneel DMS ERP',
+
+    // ---- Barcode scanning & labels ----
+    'scan_barcode' => 'বারকোড স্ক্যান করুন',
+    'scan_barcode_placeholder' => 'এখানে ক্লিক করে স্ক্যান করুন — অথবা বারকোড/SKU টাইপ করে Enter চাপুন',
+    'scan_barcode_hint' => 'যেকোনো USB/Bluetooth বারকোড স্ক্যানার দিয়ে কাজ করে (এগুলো নিজে থেকেই টাইপ করে Enter চাপে), অথবা ম্যানুয়ালি কোড টাইপ করেও ব্যবহার করা যায়।',
+    'scan_added' => 'যোগ হয়েছে',
+    'scan_not_found' => 'এই কোডের সাথে মিলে এমন কোনো পণ্য পাওয়া যায়নি',
+    'barcode_labels' => 'বারকোড লেবেল',
+    'number_of_labels' => 'লেবেলের সংখ্যা',
+    'update' => 'আপডেট করুন',
+    'print_barcode' => 'বারকোড লেবেল প্রিন্ট করুন',
+
+    // ---- Self-service profile ----
+    'my_profile' => 'আমার প্রোফাইল',
+    'profile_info' => 'প্রোফাইল তথ্য',
+    'role_change_hint' => 'আপনার রোল শুধুমাত্র Admin (Users পেজ থেকে) পরিবর্তন করতে পারবেন।',
+    'change_password' => 'পাসওয়ার্ড পরিবর্তন',
+    'current_password' => 'বর্তমান পাসওয়ার্ড',
+    'new_password' => 'নতুন পাসওয়ার্ড',
+    'update_password' => 'পাসওয়ার্ড আপডেট করুন',
+    'profile_updated' => 'প্রোফাইল সফলভাবে আপডেট হয়েছে।',
+    'password_updated' => 'পাসওয়ার্ড সফলভাবে আপডেট হয়েছে।',
+    'current_password_incorrect' => 'আপনার দেওয়া বর্তমান পাসওয়ার্ডটি সঠিক নয়।',
+
+    // ---- Database Backup ----
+    'backups' => 'ব্যাকআপ',
+    'create_backup_now' => 'এখনই ব্যাকআপ তৈরি করুন',
+    'backup_hint' => 'আপনার ডাটাবেজের সম্পূর্ণ .sql ফাইল ডাউনলোড হবে। এই সার্ভারের বাইরেও একটা কপি রাখুন (Google Drive, নিজের ইমেইলে পাঠানো ইত্যাদি) — শুধু একই সার্ভারে রাখা ব্যাকআপ সেই সার্ভার নষ্ট হলে হারিয়ে যাবে।',
+    'create_backup' => 'ব্যাকআপ তৈরি করুন',
+    'existing_backups' => 'বিদ্যমান ব্যাকআপ',
+    'file_name' => 'ফাইলের নাম',
+    'size' => 'সাইজ',
+    'backup_created' => 'ব্যাকআপ সফলভাবে তৈরি হয়েছে।',
+    'backup_failed' => 'ব্যাকআপ ব্যর্থ হয়েছে',
+    'backup_deleted' => 'ব্যাকআপ মুছে ফেলা হয়েছে।',
+
+    // ---- CSV Export ----
+    'export_csv' => 'CSV এক্সপোর্ট করুন',
+
+    // ---- SMS Notifications ----
+    'sms' => 'SMS',
+    'sms_extra_recipients' => 'SMS অতিরিক্ত প্রাপক',
+    'sms_extra_recipients_placeholder' => '8801XXXXXXXXX, 8801YYYYYYYYY',
+    'sms_not_configured' => 'SMS গেটওয়ে এখনো কনফিগার করা হয়নি (.env-এ SMS_ENABLED/SMS_API_KEY) — নিচের SMS টগলগুলো কাজ করবে না যতক্ষণ না এটা করা হয়। সেটআপের জন্য README দেখুন।',
+    'sms_remaining_suffix' => 'বাকি আছে',
 ];

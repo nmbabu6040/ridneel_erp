@@ -5,12 +5,37 @@ namespace App\Http\Controllers\Accounting;
 use App\Http\Controllers\Controller;
 use App\Models\AccountHead;
 use App\Models\Expense;
+use App\Support\CsvExporter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
     public function index(Request $request)
+    {
+        $query = $this->filteredQuery($request);
+
+        $expenses = $query->paginate(20)->withQueryString();
+        $heads    = AccountHead::where('type', 'expense')->where('is_active', true)->orderBy('name')->get();
+        $total    = (clone $query)->sum('amount');
+
+        return view('accounting.expenses.index', compact('expenses', 'heads', 'total'));
+    }
+
+    public function export(Request $request)
+    {
+        $rows = $this->filteredQuery($request)->get()->map(fn (Expense $e) => [
+            $e->expense_date->format('Y-m-d'), $e->accountHead?->displayName(), $e->paid_to, $e->amount, $e->createdBy?->name,
+        ]);
+
+        return CsvExporter::stream(
+            'expenses-' . now()->format('Y-m-d') . '.csv',
+            ['Date', 'Account Head', 'Paid To', 'Amount', 'By'],
+            $rows
+        );
+    }
+
+    private function filteredQuery(Request $request)
     {
         $query = Expense::with(['accountHead', 'createdBy'])->latest('expense_date')->latest('id');
 
@@ -24,11 +49,7 @@ class ExpenseController extends Controller
             $query->whereDate('expense_date', '<=', $to);
         }
 
-        $expenses = $query->paginate(20)->withQueryString();
-        $heads    = AccountHead::where('type', 'expense')->where('is_active', true)->orderBy('name')->get();
-        $total    = (clone $query)->sum('amount');
-
-        return view('accounting.expenses.index', compact('expenses', 'heads', 'total'));
+        return $query;
     }
 
     public function create()

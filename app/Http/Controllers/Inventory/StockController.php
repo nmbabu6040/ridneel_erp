@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\Warehouse;
+use App\Support\CsvExporter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -14,6 +15,31 @@ class StockController extends Controller
 {
     /** Stock ledger — filterable list of every movement. */
     public function index(Request $request)
+    {
+        $query = $this->filteredQuery($request);
+
+        $movements  = $query->paginate(20)->withQueryString();
+        $products   = Product::orderBy('name')->get();
+        $warehouses = Warehouse::orderBy('name')->get();
+
+        return view('inventory.stock.index', compact('movements', 'products', 'warehouses'));
+    }
+
+    public function export(Request $request)
+    {
+        $rows = $this->filteredQuery($request)->get()->map(fn (StockMovement $m) => [
+            $m->created_at->format('Y-m-d H:i'), $m->product?->name, $m->warehouse?->name,
+            $m->typeLabel(), $m->quantity, $m->reference_no, $m->createdBy?->name,
+        ]);
+
+        return CsvExporter::stream(
+            'stock-ledger-' . now()->format('Y-m-d') . '.csv',
+            ['Date', 'Product', 'Warehouse', 'Type', 'Quantity', 'Reference', 'By'],
+            $rows
+        );
+    }
+
+    private function filteredQuery(Request $request)
     {
         $query = StockMovement::with(['product', 'warehouse', 'createdBy'])->latest();
 
@@ -27,11 +53,7 @@ class StockController extends Controller
             $query->where('type', $type);
         }
 
-        $movements  = $query->paginate(20)->withQueryString();
-        $products   = Product::orderBy('name')->get();
-        $warehouses = Warehouse::orderBy('name')->get();
-
-        return view('inventory.stock.index', compact('movements', 'products', 'warehouses'));
+        return $query;
     }
 
     /** Form to record Opening Stock or a manual Adjustment. */

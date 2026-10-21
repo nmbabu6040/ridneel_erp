@@ -18,9 +18,12 @@
                 <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('app.status_cancelled') }}</option>
             </select>
         </form>
-        @can('accounting.manage')
-            <a href="{{ route('purchases.create') }}" class="btn btn-primary btn-sm text-nowrap"><i class="bi bi-plus-lg"></i> {{ __('app.new_purchase') }}</a>
-        @endcan
+        <div class="d-flex gap-2">
+            <a href="{{ route('purchases.export', request()->query()) }}" class="btn btn-outline-secondary btn-sm text-nowrap"><i class="bi bi-file-earmark-spreadsheet"></i> {{ __('app.export_csv') }}</a>
+            @can('accounting.manage')
+                <a href="{{ route('purchases.create') }}" class="btn btn-primary btn-sm text-nowrap"><i class="bi bi-plus-lg"></i> {{ __('app.new_purchase') }}</a>
+            @endcan
+        </div>
     </div>
 
     <div class="stat-card p-0">

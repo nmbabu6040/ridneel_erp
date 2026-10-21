@@ -36,6 +36,11 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><h6 class="dropdown-header">{{ auth()->user()->role?->displayName() ?? __('app.no_role') }}</h6></li>
+                <li>
+                    <a href="{{ route('profile.edit') }}" class="dropdown-item">
+                        <i class="bi bi-person-gear me-1"></i> {{ __('app.my_profile') }}
+                    </a>
+                </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                     <form method="POST" action="{{ route('logout') }}">

@@ -406,4 +406,49 @@ return [
     'email_overdue_subject' => 'Overdue Balance Reminder — Ridneel DMS ERP',
     'email_daily_summary_subject' => 'Daily Business Summary',
     'email_test_subject' => 'Test Email — Ridneel DMS ERP',
+
+    // ---- Barcode scanning & labels ----
+    'scan_barcode' => 'Scan Barcode',
+    'scan_barcode_placeholder' => 'Click here, then scan — or type barcode/SKU and press Enter',
+    'scan_barcode_hint' => 'Works with any USB/Bluetooth barcode scanner (it types + presses Enter automatically) or by typing the code manually.',
+    'scan_added' => 'added',
+    'scan_not_found' => 'No product found for this code',
+    'barcode_labels' => 'Barcode Labels',
+    'number_of_labels' => 'Number of Labels',
+    'update' => 'Update',
+    'print_barcode' => 'Print Barcode Label',
+
+    // ---- Self-service profile ----
+    'my_profile' => 'My Profile',
+    'profile_info' => 'Profile Information',
+    'role_change_hint' => "Your role can only be changed by an Admin (Users page).",
+    'change_password' => 'Change Password',
+    'current_password' => 'Current Password',
+    'new_password' => 'New Password',
+    'update_password' => 'Update Password',
+    'profile_updated' => 'Profile updated successfully.',
+    'password_updated' => 'Password updated successfully.',
+    'current_password_incorrect' => 'The current password you entered is incorrect.',
+
+    // ---- Database Backup ----
+    'backups' => 'Backups',
+    'create_backup_now' => 'Create Backup Now',
+    'backup_hint' => 'Downloads a full .sql dump of your database. Keep copies somewhere outside this server too (Google Drive, email to yourself, etc.) — a backup stored only on the same server is lost if that server fails.',
+    'create_backup' => 'Create Backup',
+    'existing_backups' => 'Existing Backups',
+    'file_name' => 'File Name',
+    'size' => 'Size',
+    'backup_created' => 'Backup created successfully.',
+    'backup_failed' => 'Backup failed',
+    'backup_deleted' => 'Backup deleted.',
+
+    // ---- CSV Export ----
+    'export_csv' => 'Export CSV',
+
+    // ---- SMS Notifications ----
+    'sms' => 'SMS',
+    'sms_extra_recipients' => 'SMS Extra Recipients',
+    'sms_extra_recipients_placeholder' => '8801XXXXXXXXX, 8801YYYYYYYYY',
+    'sms_not_configured' => "SMS gateway isn't configured yet (SMS_ENABLED/SMS_API_KEY in .env) — SMS toggles below will have no effect until it is. See README for setup.",
+    'sms_remaining_suffix' => 'remaining',
 ];

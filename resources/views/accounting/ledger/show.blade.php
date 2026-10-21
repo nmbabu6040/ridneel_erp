@@ -10,6 +10,7 @@
                 <h5 class="fw-bold mb-1">{{ $partner->name }}</h5>
                 <div class="small text-secondary">{{ $partner->business_name }} · {{ $partner->typeLabel() }}</div>
                 <div class="small">{{ $partner->phone }}</div>
+                <a href="{{ route('accounting.ledger.export', $partner) }}" class="btn btn-outline-secondary btn-sm mt-2"><i class="bi bi-file-earmark-spreadsheet"></i> {{ __('app.export_csv') }}</a>
             </div>
             <div class="col-md-6 text-md-end">
                 <div class="small text-secondary">{{ __('app.opening_balance') }}: {{ number_format($openingBalance, 2) }}</div>

@@ -25,5 +25,20 @@ class AppServiceProvider extends ServiceProvider
         Gate::before(function ($user, string $ability) {
             return $user->hasPermission($ability) ?: null;
         });
+
+        /**
+         * IMPORTANT: SetLocale (the bn/en language-switch middleware)
+         * is NOT registered here. An earlier version of this file tried
+         * to auto-register it via $kernel->pushMiddlewareToGroup(), but
+         * that method only exists on Laravel 10's old-style Kernel —
+         * Laravel 11/12 removed it when middleware registration moved
+         * to bootstrap/app.php, so calling it there throws "Call to
+         * undefined method ...Kernel::pushMiddlewareToGroup()" (exactly
+         * the error this caused). There is no reliable way to register
+         * middleware from inside a service provider's boot() that works
+         * identically across Laravel 10 AND 11/12, so this really does
+         * need the one manual step below — see bootstrap/app.php.snippet
+         * (Laravel 11/12) or app/Http/Kernel.php.snippet (Laravel 10).
+         */
     }
 }

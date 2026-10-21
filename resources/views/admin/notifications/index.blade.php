@@ -14,6 +14,12 @@
         <div class="form-text">{{ __('app.send_test_hint') }}</div>
     </div>
 
+    @unless ($smsConfigured)
+        <div class="alert alert-light border small mb-4" style="max-width:700px;">
+            <i class="bi bi-info-circle"></i> {{ __('app.sms_not_configured') }}
+        </div>
+    @endunless
+
     {{-- Each row submits to a different URL, so each gets its own <form> —
          but a <form> can't legally be a child of <tr> in HTML. Instead,
          each form is declared empty here (outside the table) and every
@@ -32,8 +38,10 @@
                 <thead>
                     <tr>
                         <th>{{ __('app.event') }}</th>
-                        <th style="width:90px">{{ __('app.enabled') }}</th>
+                        <th style="width:70px">{{ __('app.email') }}</th>
                         <th>{{ __('app.extra_recipients') }}</th>
+                        <th style="width:70px">{{ __('app.sms') }}</th>
+                        <th>{{ __('app.sms_extra_recipients') }}</th>
                         <th style="width:90px"></th>
                     </tr>
                 </thead>
@@ -52,6 +60,14 @@
                             </td>
                             <td>
                                 <input type="text" form="{{ $formId }}" name="extra_recipients" class="form-control form-control-sm" value="{{ $setting->extra_recipients }}" placeholder="{{ __('app.extra_recipients_placeholder') }}">
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" form="{{ $formId }}" name="sms_enabled" value="1" {{ $setting->sms_enabled ? 'checked' : '' }}>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" form="{{ $formId }}" name="sms_extra_recipients" class="form-control form-control-sm" value="{{ $setting->sms_extra_recipients }}" placeholder="{{ __('app.sms_extra_recipients_placeholder') }}">
                             </td>
                             <td class="text-end">
                                 <button type="submit" form="{{ $formId }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-check-lg"></i></button>

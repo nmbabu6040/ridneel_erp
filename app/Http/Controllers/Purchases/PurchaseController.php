@@ -11,6 +11,7 @@ use App\Models\PurchaseItem;
 use App\Models\StockMovement;
 use App\Models\Warehouse;
 use App\Services\NotificationDispatcher;
+use App\Support\CsvExporter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,30 @@ use Illuminate\Support\Facades\DB;
 class PurchaseController extends Controller
 {
     public function index(Request $request)
+    {
+        $query = $this->filteredQuery($request);
+
+        $purchases = $query->paginate(15)->withQueryString();
+        $suppliers = Partner::type('supplier')->orderBy('name')->get();
+
+        return view('purchases.index', compact('purchases', 'suppliers'));
+    }
+
+    public function export(Request $request)
+    {
+        $rows = $this->filteredQuery($request)->get()->map(fn (Purchase $p) => [
+            $p->invoice_no, $p->purchase_date->format('Y-m-d'), $p->supplier?->name,
+            $p->subtotal, $p->discount, $p->total, $p->paid_amount, $p->due_amount, $p->status,
+        ]);
+
+        return CsvExporter::stream(
+            'purchases-' . now()->format('Y-m-d') . '.csv',
+            ['Invoice No', 'Date', 'Supplier', 'Subtotal', 'Discount', 'Total', 'Paid', 'Due', 'Status'],
+            $rows
+        );
+    }
+
+    private function filteredQuery(Request $request)
     {
         $query = Purchase::with(['supplier', 'warehouse'])->latest('purchase_date')->latest('id');
 
@@ -28,10 +53,7 @@ class PurchaseController extends Controller
             $query->where('status', $status);
         }
 
-        $purchases = $query->paginate(15)->withQueryString();
-        $suppliers = Partner::type('supplier')->orderBy('name')->get();
-
-        return view('purchases.index', compact('purchases', 'suppliers'));
+        return $query;
     }
 
     public function create()

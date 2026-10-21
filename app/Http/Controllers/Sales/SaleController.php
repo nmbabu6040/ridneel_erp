@@ -12,6 +12,7 @@ use App\Models\SalesTarget;
 use App\Models\StockMovement;
 use App\Models\Warehouse;
 use App\Services\NotificationDispatcher;
+use App\Support\CsvExporter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,33 @@ class SaleController extends Controller
         $type = $request->get('type', 'primary');
         abort_unless(in_array($type, ['primary', 'secondary'], true), 404);
 
+        $query = $this->filteredQuery($request, $type);
+
+        $sales    = $query->paginate(15)->withQueryString();
+        $partners = Partner::type($type === 'primary' ? 'dealer' : 'retailer')->orderBy('name')->get();
+
+        return view('sales.index', compact('sales', 'type', 'partners'));
+    }
+
+    public function export(Request $request)
+    {
+        $type = $request->get('type', 'primary');
+        abort_unless(in_array($type, ['primary', 'secondary'], true), 404);
+
+        $rows = $this->filteredQuery($request, $type)->get()->map(fn (Sale $s) => [
+            $s->invoice_no, $s->sale_date->format('Y-m-d'), $s->partner?->name,
+            $s->subtotal, $s->discount, $s->total, $s->paid_amount, $s->due_amount, $s->status,
+        ]);
+
+        return CsvExporter::stream(
+            "sales-{$type}-" . now()->format('Y-m-d') . '.csv',
+            ['Invoice No', 'Date', 'Partner', 'Subtotal', 'Discount', 'Total', 'Paid', 'Due', 'Status'],
+            $rows
+        );
+    }
+
+    private function filteredQuery(Request $request, string $type)
+    {
         $query = Sale::with(['partner', 'warehouse'])->where('type', $type)->latest('sale_date')->latest('id');
 
         if ($partnerId = $request->get('partner_id')) {
@@ -34,10 +62,7 @@ class SaleController extends Controller
             $query->where('status', $status);
         }
 
-        $sales    = $query->paginate(15)->withQueryString();
-        $partners = Partner::type($type === 'primary' ? 'dealer' : 'retailer')->orderBy('name')->get();
-
-        return view('sales.index', compact('sales', 'type', 'partners'));
+        return $query;
     }
 
     public function create(Request $request)
@@ -292,7 +317,9 @@ class SaleController extends Controller
                         'reorderLevel'  => $product->reorder_level,
                         'unit'          => $product->unit?->short_code,
                     ],
-                    defaultRecipients: NotificationDispatcher::emailsWithPermission('inventory.manage')
+                    defaultRecipients: NotificationDispatcher::emailsWithPermission('inventory.manage'),
+                    smsText: __('app.email_low_stock_subject') . ' ' . $product->name . ' — ' . $product->currentStock($sale->warehouse_id) . ' ' . $product->unit?->short_code . ' ' . __('app.sms_remaining_suffix'),
+                    defaultSmsPhones: NotificationDispatcher::phonesWithPermission('inventory.manage')
                 );
             }
         }

@@ -35,9 +35,7 @@
                             <td>{{ $loc->recorded_at->diffForHumans() }}</td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="3" class="text-center text-secondary py-4">{{ __('app.no_location_data') }}</td>
-                        </tr>
+                        <tr><td colspan="3" class="text-center text-secondary py-4">{{ __('app.no_location_data') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -46,59 +44,58 @@
 @endsection
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 @endpush
 
-
-
+{{--
+    Building the JS data array here, in a plain @php block, rather than
+    inline inside @json(...with a multi-line closure...) — Blade's
+    directive-argument parser can misparse a multi-line function(){}
+    body (braces + brackets + a `use()` clause together), which produced
+    an invalid compiled PHP file ("Unclosed '[' ... does not match ')'").
+    A @php block has no such restriction; @json() then just echoes an
+    already-built plain array, which is always safe.
+--}}
 @php
-    $mapPoints = $locations
-        ->map(function ($loc) use ($todayAttendance) {
-            $att = $todayAttendance->get($loc->user_id);
-            return [
-                'name' => $loc->user?->name,
-                'lat' => (float) $loc->latitude,
-                'lng' => (float) $loc->longitude,
-                'time' => $loc->recorded_at->format('h:i A'),
-                'onDuty' => $att?->isCheckedIn() ?? false,
-            ];
-        })
-        ->values();
+    $mapPoints = $locations->map(function ($loc) use ($todayAttendance) {
+        $att = $todayAttendance->get($loc->user_id);
+        return [
+            'name'   => $loc->user?->name,
+            'lat'    => (float) $loc->latitude,
+            'lng'    => (float) $loc->longitude,
+            'time'   => $loc->recorded_at->format('h:i A'),
+            'onDuty' => $att?->isCheckedIn() ?? false,
+        ];
+    })->values();
 @endphp
 
 @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <script>
-        (function() {
-            var points = @json($mapPoints);
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function () {
+    var points = @json($mapPoints);
 
-            var defaultCenter = points.length ? [points[0].lat, points[0].lng] : [23.8103, 90.4125]; // Dhaka fallback
-            var map = L.map('live-map').setView(defaultCenter, points.length ? 12 : 7);
+    var defaultCenter = points.length ? [points[0].lat, points[0].lng] : [23.8103, 90.4125]; // Dhaka fallback
+    var map = L.map('live-map').setView(defaultCenter, points.length ? 12 : 7);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-                maxZoom: 19,
-            }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19,
+    }).addTo(map);
 
-            var bounds = [];
-            points.forEach(function(p) {
-                var color = p.onDuty ? '#198754' : '#6c757d';
-                var marker = L.circleMarker([p.lat, p.lng], {
-                    radius: 9,
-                    fillColor: color,
-                    color: '#fff',
-                    weight: 2,
-                    fillOpacity: 0.9,
-                }).addTo(map);
-                marker.bindPopup('<strong>' + p.name + '</strong><br>' + p.time);
-                bounds.push([p.lat, p.lng]);
-            });
+    var bounds = [];
+    points.forEach(function (p) {
+        var color = p.onDuty ? '#198754' : '#6c757d';
+        var marker = L.circleMarker([p.lat, p.lng], {
+            radius: 9, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.9,
+        }).addTo(map);
+        marker.bindPopup('<strong>' + p.name + '</strong><br>' + p.time);
+        bounds.push([p.lat, p.lng]);
+    });
 
-            if (bounds.length > 1) {
-                map.fitBounds(bounds, {
-                    padding: [40, 40]
-                });
-            }
-        })();
-    </script>
+    if (bounds.length > 1) {
+        map.fitBounds(bounds, { padding: [40, 40] });
+    }
+})();
+</script>
 @endpush

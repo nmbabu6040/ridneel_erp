@@ -1,0 +1,13 @@
+<?php
+/**
+ * Add this 'sms' array as one more entry inside the return [...] array
+ * of your existing config/services.php (alongside 'postmark', 'ses',
+ * etc. that Laravel ships by default).
+ */
+
+'sms' => [
+    'enabled'   => env('SMS_ENABLED', false),
+    'url'       => env('SMS_GATEWAY_URL'),
+    'api_key'   => env('SMS_API_KEY'),
+    'sender_id' => env('SMS_SENDER_ID'),
+],

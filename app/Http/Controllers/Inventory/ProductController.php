@@ -43,6 +43,26 @@ class ProductController extends Controller
         return view('inventory.products.index', compact('products'));
     }
 
+    /**
+     * Printable barcode label sheet for one product — renders the
+     * product's barcode (falling back to its SKU if no barcode was
+     * entered, so every product can always get a scannable label even
+     * before a "real" barcode is assigned) as a Code128 symbol via
+     * JsBarcode, loaded client-side from a CDN. No server-side barcode
+     * library needed; the browser's own Print dialog is the delivery
+     * mechanism (Save as PDF or print directly to label paper).
+     */
+    public function barcodeLabel(Request $request, Product $product)
+    {
+        $qty = max(1, min(200, (int) $request->get('qty', 20)));
+
+        return view('inventory.products.barcode-label', [
+            'product' => $product,
+            'qty'     => $qty,
+            'code'    => $product->barcode ?: $product->sku,
+        ]);
+    }
+
     public function create()
     {
         return view('inventory.products.form', [

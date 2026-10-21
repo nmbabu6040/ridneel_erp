@@ -55,6 +55,7 @@
                             </td>
                             <td><span class="badge {{ $product->is_active ? 'badge-status-active' : 'badge-status-inactive' }}">{{ $product->is_active ? __('app.status_active') : __('app.status_inactive') }}</span></td>
                             <td class="text-end">
+                                <a href="{{ route('inventory.products.barcode-label', $product) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="{{ __('app.print_barcode') }}"><i class="bi bi-upc-scan"></i></a>
                                 @can('inventory.manage')
                                     <a href="{{ route('inventory.products.edit', $product) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
                                     <form action="{{ route('inventory.products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('app.confirm_delete') }}');">

@@ -21,10 +21,19 @@ class NotificationSettingSeeder extends Seeder
             ['event_key' => 'daily_summary',   'label' => "Daily business summary (to admins/managers)", 'label_bn' => 'দৈনিক ব্যবসায়িক সারসংক্ষেপ (অ্যাডমিন/ম্যানেজারদের জন্য)'],
         ];
 
+        // SMS defaults to OFF for every event except the two genuinely
+        // urgent, time-sensitive ones — SMS usually costs money per
+        // message, so it should be something an admin opts into
+        // deliberately for the rest, from the Notification Settings page.
+        $smsDefaultOn = ['low_stock', 'sr_late_checkin'];
+
         foreach ($events as $event) {
             NotificationSetting::updateOrCreate(
                 ['event_key' => $event['event_key']],
-                $event + ['email_enabled' => true]
+                $event + [
+                    'email_enabled' => true,
+                    'sms_enabled'   => in_array($event['event_key'], $smsDefaultOn, true),
+                ]
             );
         }
     }

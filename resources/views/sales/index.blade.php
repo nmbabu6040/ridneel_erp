@@ -28,11 +28,16 @@
                 <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('app.status_cancelled') }}</option>
             </select>
         </form>
-        @can(($type === 'primary' ? 'sales.primary' : 'sales.secondary'))
-            <a href="{{ route('sales.create', ['type' => $type]) }}" class="btn btn-primary btn-sm text-nowrap">
-                <i class="bi bi-plus-lg"></i> {{ __('app.new_invoice') }}
+        <div class="d-flex gap-2">
+            <a href="{{ route('sales.export', request()->query()) }}" class="btn btn-outline-secondary btn-sm text-nowrap">
+                <i class="bi bi-file-earmark-spreadsheet"></i> {{ __('app.export_csv') }}
             </a>
-        @endcan
+            @can(($type === 'primary' ? 'sales.primary' : 'sales.secondary'))
+                <a href="{{ route('sales.create', ['type' => $type]) }}" class="btn btn-primary btn-sm text-nowrap">
+                    <i class="bi bi-plus-lg"></i> {{ __('app.new_invoice') }}
+                </a>
+            @endcan
+        </div>
     </div>
 
     <div class="stat-card p-0">

@@ -85,7 +85,9 @@ class AttendanceController extends Controller
                     'checkInTime' => now()->format('h:i A'),
                     'date'        => now()->format('d M Y'),
                 ],
-                defaultRecipients: NotificationDispatcher::emailsWithPermission('sr.tracking.view')
+                defaultRecipients: NotificationDispatcher::emailsWithPermission('sr.tracking.view'),
+                smsText: __('app.email_sr_late_subject') . ' ' . $user->name . ' (' . now()->format('h:i A') . ')',
+                defaultSmsPhones: NotificationDispatcher::phonesWithPermission('sr.tracking.view')
             );
         }
 

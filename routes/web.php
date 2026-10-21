@@ -5,6 +5,7 @@ use App\Http\Controllers\Accounting\ExpenseController;
 use App\Http\Controllers\Accounting\LedgerController;
 use App\Http\Controllers\Accounting\ReportController;
 use App\Http\Controllers\Accounting\VoucherController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\NotificationSettingController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Kpi\ReportController as KpiReportController;
 use App\Http\Controllers\Kpi\TargetController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Partners\PartnerController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Purchases\PurchaseController;
 use App\Http\Controllers\Returns\ReturnController;
 use App\Http\Controllers\Sales\SaleController;
@@ -54,6 +56,17 @@ Route::middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])
         ->middleware('permission:dashboard.view')
         ->name('dashboard');
+
+    // Self-service profile — every logged-in user, regardless of role
+    // or permissions, can manage their own name/email/phone and change
+    // their own password. No 'permission:' middleware here on purpose:
+    // the controller itself only ever touches $request->user(), never
+    // a {user} route parameter, so there's nothing extra to gate.
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'edit'])->name('edit');
+        Route::put('/', [ProfileController::class, 'update'])->name('update');
+        Route::put('password', [ProfileController::class, 'updatePassword'])->name('password');
+    });
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('permission:users.view')->group(function () {
@@ -98,6 +111,13 @@ Route::middleware('auth')->group(function () {
         Route::post('test', [NotificationSettingController::class, 'sendTest'])->name('test');
     });
 
+    Route::prefix('admin/backups')->name('admin.backups.')->middleware('permission:settings.manage')->group(function () {
+        Route::get('/', [BackupController::class, 'index'])->name('index');
+        Route::post('/', [BackupController::class, 'store'])->name('store');
+        Route::get('{filename}/download', [BackupController::class, 'download'])->name('download');
+        Route::delete('{filename}', [BackupController::class, 'destroy'])->name('destroy');
+    });
+
     /*
     |----------------------------------------------------------------
     | Phase 2 — Master Data & Inventory
@@ -109,6 +129,7 @@ Route::middleware('auth')->group(function () {
             Route::get('units', [UnitController::class, 'index'])->name('units.index');
             Route::get('warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');
             Route::get('products', [ProductController::class, 'index'])->name('products.index');
+            Route::get('products/{product}/barcode-label', [ProductController::class, 'barcodeLabel'])->name('products.barcode-label');
         });
         Route::middleware('permission:inventory.manage')->group(function () {
             Route::resource('categories', CategoryController::class)->except(['index', 'show']);
@@ -119,6 +140,7 @@ Route::middleware('auth')->group(function () {
 
         Route::middleware('permission:stock.view')->group(function () {
             Route::get('stock', [StockController::class, 'index'])->name('stock.index');
+            Route::get('stock/export/csv', [StockController::class, 'export'])->name('stock.export');
         });
         Route::middleware('permission:stock.adjust')->group(function () {
             Route::get('stock/create', [StockController::class, 'create'])->name('stock.create');
@@ -151,6 +173,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('sales')->name('sales.')->group(function () {
         Route::middleware('permission:sales.view')->group(function () {
             Route::get('/', [SaleController::class, 'index'])->name('index');
+            Route::get('export/csv', [SaleController::class, 'export'])->name('export');
             Route::get('{sale}', [SaleController::class, 'show'])->name('show');
         });
         Route::middleware('permission:sales.primary|sales.secondary')->group(function () {
@@ -191,6 +214,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('purchases')->name('purchases.')->group(function () {
         Route::middleware('permission:accounting.view')->group(function () {
             Route::get('/', [PurchaseController::class, 'index'])->name('index');
+            Route::get('export/csv', [PurchaseController::class, 'export'])->name('export');
             Route::get('{purchase}', [PurchaseController::class, 'show'])->name('show');
         });
         Route::middleware('permission:accounting.manage')->group(function () {
@@ -204,8 +228,10 @@ Route::middleware('auth')->group(function () {
         Route::middleware('permission:accounting.view')->group(function () {
             Route::get('account-heads', [AccountHeadController::class, 'index'])->name('account-heads.index');
             Route::get('expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+            Route::get('expenses/export/csv', [ExpenseController::class, 'export'])->name('expenses.export');
             Route::get('ledger', [LedgerController::class, 'index'])->name('ledger.index');
             Route::get('ledger/{partner}', [LedgerController::class, 'show'])->name('ledger.show');
+            Route::get('ledger/{partner}/export', [LedgerController::class, 'export'])->name('ledger.export');
             Route::get('reports/profit-loss', [ReportController::class, 'profitLoss'])->name('reports.profit-loss');
         });
         Route::middleware('permission:accounting.manage')->group(function () {

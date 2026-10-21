@@ -6,9 +6,12 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <h5 class="fw-bold mb-0">{{ __('app.expenses') }}</h5>
-        @can('accounting.manage')
-            <a href="{{ route('accounting.expenses.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> {{ __('app.add_expense') }}</a>
-        @endcan
+        <div class="d-flex gap-2">
+            <a href="{{ route('accounting.expenses.export', request()->query()) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-spreadsheet"></i> {{ __('app.export_csv') }}</a>
+            @can('accounting.manage')
+                <a href="{{ route('accounting.expenses.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> {{ __('app.add_expense') }}</a>
+            @endcan
+        </div>
     </div>
 
     <form method="GET" class="row g-2 mb-3">

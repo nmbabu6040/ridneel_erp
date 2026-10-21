@@ -14,3 +14,6 @@ Schedule::command('app:send-daily-summary')->dailyAt('23:50');
 
 // Overdue balance reminder — runs every morning.
 Schedule::command('app:send-overdue-reminders')->dailyAt('09:00');
+
+// Database backup — runs every night, keeps the last 14 by default.
+Schedule::command('app:backup-database')->dailyAt('02:00');

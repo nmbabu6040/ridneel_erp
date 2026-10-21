@@ -12,7 +12,7 @@ class SystemNotificationMail extends Mailable
 
     public string $subjectLine;
     public string $viewName;
-    // public array $viewData;
+    public array $viewData;
 
     public function __construct(string $subject, string $view, array $data = [])
     {
