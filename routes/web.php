@@ -38,7 +38,11 @@ use Illuminate\Support\Facades\Route;
 | bottom of this file — keeping this file from growing unbounded.
 */
 
-Route::get('/', fn () => redirect()->route('login'));
+
+
+
+
+Route::get('/', fn() => redirect()->route('login'));
 
 Route::get('language/{locale}', [LanguageController::class, 'switch'])
     ->name('language.switch');
