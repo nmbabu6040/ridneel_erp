@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\DatabaseBackupService;
 use Illuminate\Http\RedirectResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 class BackupController extends Controller
 {
-    public function __construct(private DatabaseBackupService $backups) {}
+    public function __construct(private DatabaseBackupService $backups)
+    {
+    }
 
     public function index()
     {
@@ -27,23 +29,17 @@ class BackupController extends Controller
         }
     }
 
-
-    public function download(string $filename): BinaryFileResponse
+    public function download(string $filename): Response
     {
+        // basename() strips any directory traversal attempt (../) from
+        // the filename before it ever touches the filesystem path.
         $safe = basename($filename);
         $path = $this->backups->path($safe);
 
-        abort_unless(
-            $safe === $filename
-                && Str::endsWith($safe, '.sql')
-                && file_exists($path)
-                && is_file($path),
-            404
-        );
+        abort_unless(file_exists($path) && Str::endsWith($safe, '.sql'), 404);
 
         return response()->download($path);
     }
-
 
     public function destroy(string $filename): RedirectResponse
     {

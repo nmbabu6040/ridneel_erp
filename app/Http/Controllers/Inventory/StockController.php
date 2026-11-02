@@ -73,6 +73,8 @@ class StockController extends Controller
             'type'         => ['required', Rule::in(['opening', 'adjustment_in', 'adjustment_out'])],
             'quantity'     => ['required', 'integer', 'min:1'],
             'unit_cost'    => ['nullable', 'numeric', 'min:0'],
+            'batch_no'     => ['nullable', 'string', 'max:50'],
+            'expiry_date'  => ['nullable', 'date'],
             'note'         => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -89,10 +91,45 @@ class StockController extends Controller
             'type'         => $data['type'],
             'quantity'     => $signedQuantity,
             'unit_cost'    => $data['unit_cost'] ?? null,
+            'batch_no'     => $data['batch_no'] ?? null,
+            'expiry_date'  => $data['expiry_date'] ?? null,
             'note'         => $data['note'] ?? null,
             'created_by'   => $request->user()->id,
         ]);
 
         return redirect()->route('inventory.stock.index')->with('success', __('app.stock_entry_saved'));
+    }
+
+    /**
+     * Every batch still in stock, across all batch-tracked products,
+     * soonest-expiry-first — the page a warehouse manager checks daily
+     * to decide what to discount/prioritize selling or pull off shelves.
+     */
+    public function expiryReport(Request $request)
+    {
+        $days = (int) $request->get('days', 30);
+
+        $products = Product::where('tracks_batches', true)->where('is_active', true)->orderBy('name')->get();
+
+        $rows = collect();
+        foreach ($products as $product) {
+            foreach ($product->availableBatches() as $batch) {
+                $rows->push((object) [
+                    'product'     => $product,
+                    'batch_no'    => $batch->batch_no,
+                    'expiry_date' => $batch->expiry_date,
+                    'remaining'   => $batch->remaining,
+                    'days_left'   => $batch->expiry_date ? now()->diffInDays($batch->expiry_date, false) : null,
+                ]);
+            }
+        }
+
+        $rows = $rows->sortBy(fn ($r) => $r->days_left ?? PHP_INT_MAX)->values();
+
+        if ($request->get('filter') === 'expiring') {
+            $rows = $rows->filter(fn ($r) => $r->days_left !== null && $r->days_left <= $days)->values();
+        }
+
+        return view('inventory.stock.expiry-report', compact('rows', 'days'));
     }
 }

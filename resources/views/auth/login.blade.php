@@ -3,11 +3,29 @@
 @section('title', __('app.login'))
 
 @section('content')
+
     <div class="text-center mb-4">
-        <span class="brand-badge d-inline-flex align-items-center justify-content-center mb-2" style="width:52px;height:52px;border-radius:12px;background:var(--brand-primary);color:#fff;font-size:1.4rem;font-weight:700;">R</span>
-        <h4 class="fw-bold mb-0">{{ __('app.app_name') }}</h4>
-        <p class="text-secondary small mb-0">Ridneel Trade International</p>
+        @if ($companySettings->logo_path)
+            <img src="{{ asset('storage/' . $companySettings->logo_path) }}" alt="{{ $companySettings->displayName() }}"
+                class="mb-2" style="width:120px; max-height:80px; object-fit:contain;">
+        @else
+            <span class="brand-badge d-inline-flex align-items-center justify-content-center mb-2"
+                style="width:52px;height:52px;border-radius:12px;background:var(--brand-primary);color:#fff;font-size:1.4rem;font-weight:700;">
+                {{ mb_substr($companySettings->displayName() ?: 'R', 0, 1) }}
+            </span>
+
+            <h4 class="fw-bold mb-0">
+                {{ $companySettings->displayName() }}
+            </h4>
+        @endif
+
+        @if ($companySettings->tagline)
+            <p class="text-secondary small mb-0">
+                {{ $companySettings->tagline }}
+            </p>
+        @endif
     </div>
+
 
     @if ($errors->any())
         <div class="alert alert-danger py-2 small">
@@ -25,15 +43,13 @@
         <div class="mb-3">
             <label for="email" class="form-label">{{ __('app.email') }}</label>
             <input id="email" type="email" name="email" value="{{ old('email') }}"
-                   class="form-control @error('email') is-invalid @enderror"
-                   required autofocus autocomplete="username">
+                class="form-control @error('email') is-invalid @enderror" required autofocus autocomplete="username">
         </div>
 
         <div class="mb-3">
             <label for="password" class="form-label">{{ __('app.password') }}</label>
             <input id="password" type="password" name="password"
-                   class="form-control @error('password') is-invalid @enderror"
-                   required autocomplete="current-password">
+                class="form-control @error('password') is-invalid @enderror" required autocomplete="current-password">
         </div>
 
         <div class="mb-3 form-check">

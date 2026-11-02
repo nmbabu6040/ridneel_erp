@@ -62,6 +62,7 @@
                             <th style="width:100px">{{ __('app.quantity') }}</th>
                             <th style="width:130px">{{ __('app.unit_cost') }}</th>
                             <th style="width:110px">{{ __('app.discount') }}</th>
+                            <th style="width:150px">{{ __('app.batch_expiry') }}</th>
                             <th style="width:120px" class="text-end">{{ __('app.subtotal') }}</th>
                             <th style="width:40px"></th>
                         </tr>
@@ -102,6 +103,7 @@
     $productsForJs = $products->map(fn ($p) => [
         'id' => $p->id, 'name' => $p->name, 'sku' => $p->sku, 'barcode' => $p->barcode,
         'cost' => (float) $p->purchase_price, 'unit' => $p->unit?->short_code,
+        'tracksBatches' => (bool) $p->tracks_batches,
     ])->values();
 @endphp
 
@@ -119,7 +121,7 @@
 
         var options = '<option value="">{{ __("app.select") }}</option>';
         products.forEach(function (p) {
-            options += '<option value="' + p.id + '" data-cost="' + p.cost + '">' + p.name + ' (' + p.sku + ')</option>';
+            options += '<option value="' + p.id + '" data-cost="' + p.cost + '" data-tracks="' + (p.tracksBatches ? 1 : 0) + '">' + p.name + ' (' + p.sku + ')</option>';
         });
 
         tr.innerHTML =
@@ -127,6 +129,10 @@
             '<td><input type="number" min="1" class="form-control form-control-sm qty-input" name="quantity[]" value="1" required></td>' +
             '<td><input type="number" step="0.01" min="0" class="form-control form-control-sm cost-input" name="unit_cost[]" required></td>' +
             '<td><input type="number" step="0.01" min="0" class="form-control form-control-sm disc-input" name="item_discount[]" value="0"></td>' +
+            '<td class="batch-cell d-none">' +
+                '<input type="text" class="form-control form-control-sm mb-1 batch-input" name="batch_no[]" placeholder="{{ __("app.batch_no") }}">' +
+                '<input type="date" class="form-control form-control-sm expiry-input" name="expiry_date[]">' +
+            '</td>' +
             '<td class="text-end row-subtotal">0.00</td>' +
             '<td><button type="button" class="btn btn-sm btn-outline-danger remove-row"><i class="bi bi-x"></i></button></td>';
 
@@ -139,10 +145,14 @@
         var qty = tr.querySelector('.qty-input');
         var cost = tr.querySelector('.cost-input');
         var disc = tr.querySelector('.disc-input');
+        var batchCell = tr.querySelector('.batch-cell');
 
         select.addEventListener('change', function () {
             var opt = select.options[select.selectedIndex];
             cost.value = opt.dataset.cost || 0;
+            // Only perishable/batch-tracked products show the batch/expiry
+            // inputs — everything else stays hidden to avoid friction.
+            batchCell.classList.toggle('d-none', opt.dataset.tracks !== '1');
             recalc();
         });
         [qty, cost, disc].forEach(function (el) { el.addEventListener('input', recalc); });

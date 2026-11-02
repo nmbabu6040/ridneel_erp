@@ -69,16 +69,16 @@ maintain করা সহজ।
 - ✅ **Stock validation** — সাবমিট করার আগেই চেক হয় নির্বাচিত গুদামে পর্যাপ্ত স্টক আছে কিনা;
   না থাকলে পুরো ইনভয়েস reject হবে (partial invoice কখনো তৈরি হবে না)
 - ✅ Invoice কনফার্ম হওয়ার সাথে সাথে automatically:
-    - স্টক লেজারে `sales_out` এন্ট্রি হয় (Phase 2-এর ledger ব্যবহার করেই — নতুন কোনো
-      স্টক-লজিক তৈরি করা হয়নি)
-    - Dealer/Retailer-এর ব্যালেন্সে (`partner_transactions`) sale + payment এন্ট্রি হয়
+  - স্টক লেজারে `sales_out` এন্ট্রি হয় (Phase 2-এর ledger ব্যবহার করেই — নতুন কোনো
+    স্টক-লজিক তৈরি করা হয়নি)
+  - Dealer/Retailer-এর ব্যালেন্সে (`partner_transactions`) sale + payment এন্ট্রি হয়
 - ✅ **Cancel Invoice** — একটি বাটনে সম্পূর্ণ reversal: স্টক ফেরত (`adjustment_in`),
   ব্যালেন্স রিভার্সাল — সব একটি DB transaction-এর মধ্যে, তাই আংশিক reversal হওয়ার
   সুযোগ নেই
 - ✅ Invoice **Print** view (ঝকঝকে A4-friendly layout, sidebar/topbar প্রিন্টে hide হয়ে যায়)
 - ✅ Dashboard-এ আজকের ইনভয়েস সংখ্যা, আজকের বিক্রয় ও মোট বকেয়া (Total Due) widget
 
-**জানা সীমাবদ্ধতা (পরে ঠিক করা যাবে প্রয়োজনে):** ইনভয়েস _দেখার_ permission
+**জানা সীমাবদ্ধতা (পরে ঠিক করা যাবে প্রয়োজনে):** ইনভয়েস *দেখার* permission
 (`sales.view`) টাইপ-নির্দিষ্ট নয় — অর্থাৎ যার `sales.view` আছে সে Primary ও Secondary
 দুই ধরনের ইনভয়েসই আইডি দিয়ে দেখতে পারবে (তৈরি/বাতিল করার permission অবশ্যই
 টাইপ-নির্দিষ্ট)। প্রয়োজন হলে `sales.primary.view` / `sales.secondary.view` আলাদা করে
@@ -103,7 +103,6 @@ maintain করা সহজ।
   (থ্রেশহোল্ড কোডে এক জায়গায়, প্রয়োজনে বদলানো সহজ)
 
 **⚠️ গুরুত্বপূর্ণ সীমাবদ্ধতা (সততার সাথে জানানো প্রয়োজন):**
-
 1. **ফেস ম্যাচিং সম্পূর্ণ ব্রাউজারে (client-side JavaScript) হয়** — সার্ভারে কোনো PHP-based
    face-recognition নেই (এমন লাইব্রেরি এই পরিবেশে ইনস্টল করা সম্ভব ছিল না)। এর মানে,
    টেকনিক্যালি দক্ষ কেউ ব্রাউজারের DevTools দিয়ে ম্যাচ distance মান বদলে দিতে পারলে
@@ -139,13 +138,12 @@ maintain করা সহজ।
   Expense breakdown ও Net Profit
 
 **⚠️ সৎভাবে জানানো সীমাবদ্ধতাসমূহ:**
-
 1. এটি **সম্পূর্ণ ডাবল-এন্ট্রি জেনারেল লেজার (GL) নয়** — Chart of Accounts এখনো শুধু
    খরচ ক্যাটাগরাইজেশনের জন্য ব্যবহৃত হচ্ছে, প্রতিটি Sale/Purchase/Payment-এর জন্য
    স্বয়ংক্রিয় journal posting তৈরি হয় না। বাস্তব ডেটা (stock ledger, partner ledger)
    থেকেই P&L হিসাব করা হয়, যা ছোট-মাঝারি ডিস্ট্রিবিউশন ব্যবসার জন্য কার্যকর, কিন্তু একটি
    ফুল অডিট-গ্রেড অ্যাকাউন্টিং সিস্টেম নয়।
-2. Profit & Loss-এর **COGS আনুমানিক** — প্রতিটি পণ্যের _বর্তমান_ purchase price দিয়ে
+2. Profit & Loss-এর **COGS আনুমানিক** — প্রতিটি পণ্যের *বর্তমান* purchase price দিয়ে
    হিসাব হয়, বিক্রির সময়কার প্রকৃত লট-cost দিয়ে নয় (কোনো FIFO/lot costing নেই)। রিপোর্ট
    পেজেই এই নোট স্পষ্টভাবে দেখানো আছে।
 3. পুরনো কোনো Purchase বাতিল করার সময়, সেই স্টক ইতিমধ্যে অন্য কোথাও বিক্রি হয়ে গিয়ে
@@ -195,7 +193,6 @@ maintain করা সহজ।
 Settings** পেজ থেকে on/off করা যায় এবং প্রতিটি পাঠানোর চেষ্টা লগ হয়ে থাকে।
 
 **যে ঘটনাগুলোতে স্বয়ংক্রিয়ভাবে ইমেইল যায়:**
-
 - ✅ **নতুন ইউজার তৈরি** — সাময়িক পাসওয়ার্ডসহ Welcome ইমেইল (নতুন ইউজারের ইমেইলে)
 - ✅ **লো-স্টক সতর্কতা** — কোনো Sales invoice-এর কারণে স্টক রি-অর্ডার লেভেলে নামলে
   (Inventory manage করতে পারা ইউজারদের কাছে)
@@ -212,17 +209,15 @@ Settings** পেজ থেকে on/off করা যায় এবং প্
   বকেয়া আছে তাদের তালিকা
 
 **Notification Settings পেজ** (Admin → Notification Settings) থেকে:
-
 - প্রতিটি ইভেন্ট আলাদাভাবে on/off করা যায়
 - প্রতিটি ইভেন্টে অতিরিক্ত ইমেইল (extra recipients) যোগ করা যায়
 - **Send Test Email** বাটন দিয়ে SMTP কনফিগারেশন সঠিক কিনা সাথে সাথে যাচাই করা যায়
 - সাম্প্রতিক ২০টি ইমেইলের Log (পাঠানো হয়েছে/ব্যর্থ হয়েছে, কারণসহ)
 
 **⚠️ সৎভাবে জানানো সীমাবদ্ধতাসমূহ:**
-
 1. **বকেয়া রিমাইন্ডার প্রকৃত aging-ভিত্তিক নয়** — কোনো নির্দিষ্ট ইনভয়েসের due date
    থেকে ৩০/৬০/৯০ দিন হিসাব করে না (যেহেতু Sale-এ কোনো "due date" ফিল্ড নেই); বরং
-   partner-এর _বর্তমান মোট balance_ দেখে পাঠায়। ভবিষ্যতে প্রকৃত invoice-aging চাইলে
+   partner-এর *বর্তমান মোট balance* দেখে পাঠায়। ভবিষ্যতে প্রকৃত invoice-aging চাইলে
    Sale টেবিলে due_date যোগ করে এই কমান্ড আপডেট করা যাবে।
 2. **ইমেইল পাঠানোর জন্য queue ব্যবহার করা হয়েছে** (`->queue()`), তাই production-এ
    `php artisan queue:work` চালু রাখতে হবে — নাহলে ইমেইল queue-তে জমে থাকবে, পাঠানো
@@ -260,26 +255,22 @@ Settings** পেজ থেকে on/off করা যায় এবং প্
 ## Phase 9-এ যা যা আছে (Barcode, Self-Service, Backup, Export, SMS)
 
 ### 📷 Barcode স্ক্যান করে পণ্য যোগ
-
 Sales/Purchase/Return-এর "New" ফর্মে এখন একটা **Scan Barcode** ইনপুট আছে — USB/Bluetooth
 ব্যারকোড স্ক্যানার (এগুলো কীবোর্ডের মতোই কাজ করে, স্ক্যান করলেই টাইপ হয়ে Enter চাপে) দিয়ে
 স্ক্যান করলেই matching পণ্য স্বয়ংক্রিয়ভাবে ইনভয়েসে যোগ হয়ে যায় (বারকোড না থাকলে SKU দিয়েও
 মিলবে)। কোনো ক্যামেরা লাইব্রেরি লাগেনি — এটা pure JS দিয়ে করা।
 
 ### 🏷️ Barcode Label প্রিন্ট
-
 Products লিস্টে প্রতিটা পণ্যের পাশে একটা বারকোড আইকন আছে — ক্লিক করলে সেই পণ্যের
 প্রিন্ট-রেডি বারকোড লেবেল শীট খোলে (JsBarcode CDN দিয়ে, কতগুলো লেবেল লাগবে বলে দেওয়া
 যায়), ব্রাউজারের Print থেকে সরাসরি লেবেল পেপারে প্রিন্ট করা যায়।
 
 ### 🔑 নিজের পাসওয়ার্ড বদলানো
-
 টপবারে নিজের নামের ড্রপডাউনে **My Profile** — এখান থেকে যেকোনো ইউজার (রোল নির্বিশেষে)
 নিজের নাম/ইমেইল/ফোন বদলাতে পারবে এবং নিজের পাসওয়ার্ড বদলাতে পারবে (বর্তমান পাসওয়ার্ড
 যাচাই করেই)।
 
 ### 💾 ডাটাবেজ Backup
-
 Admin → Backups পেজ থেকে এক ক্লিকে ডাটাবেজের `.sql` ব্যাকআপ তৈরি ও ডাউনলোড করা যায়,
 এবং প্রতিদিন রাতে স্বয়ংক্রিয়ভাবে ব্যাকআপ নেওয়ার scheduled command আছে (পুরোনো ব্যাকআপ
 স্বয়ংক্রিয়ভাবে মুছে ফেলা হয়, ডিফল্ট সর্বশেষ ১৪টা রাখে)। এটা `mysqldump` ব্যবহার করে
@@ -291,7 +282,6 @@ Admin → Backups পেজ থেকে এক ক্লিকে ডাটা�
 করবে না (প্রায় সব hosting-এ এটা by default থাকে)।
 
 ### 📊 CSV Export
-
 Sales, Purchases, Stock Ledger, Partner Ledger (Statement), ও Expenses — প্রতিটা
 লিস্ট পেজে একটা **Export CSV** বাটন আছে, যা স্ক্রিনে যে filter (তারিখ/পার্টনার/স্ট্যাটাস)
 প্রযোজ্য সেটা মেনেই এক্সপোর্ট করে। Excel/Google Sheets-এ সরাসরি খোলে।
@@ -304,7 +294,6 @@ PhpSpreadsheet/Laravel Excel-এর মতো একটা composer package ল�
 করেই PDF পাওয়া যায় (কোনো লাইব্রেরি ছাড়াই)।
 
 ### 📱 SMS নোটিফিকেশন
-
 Email-এর মতোই একটা জেনেরিক SMS ব্যবস্থা তৈরি হয়েছে, Admin → Notification Settings
 পেজেই প্রতিটা ইভেন্টের পাশে এখন আলাদা SMS কলাম আছে (on/off + অতিরিক্ত নম্বর)। ডিফল্টভাবে
 শুধু **Low Stock** ও **SR দেরিতে চেক-ইন** — এই দুটোতে SMS চালু আছে (বাকিগুলো admin
@@ -319,7 +308,6 @@ sender_id + number + message) লেখা আছে, কিন্তু **আ�
 
 SMS চালু করতে `.env`-এ (এবং `config/services.php.snippet` দেখে `config/services.php`-এ
 `sms` এন্ট্রি যোগ করে):
-
 ```env
 SMS_ENABLED=true
 SMS_GATEWAY_URL=https://your-sms-provider.com/api/send
@@ -332,14 +320,12 @@ SMS_SENDER_ID=your_sender_id
 ## Installation (ধাপে ধাপে)
 
 ### ১. নতুন Laravel প্রজেক্ট তৈরি করুন
-
 ```bash
 composer create-project laravel/laravel ridneel-dms
 cd ridneel-dms
 ```
 
 ### ২. এই প্যাকেজের ফাইলগুলো কপি করুন
-
 এই zip-এর ভেতরের ফোল্ডারগুলো আপনার নতুন Laravel প্রজেক্টে **একই path-এ** কপি/মার্জ করুন:
 
 ```
@@ -389,7 +375,6 @@ zip-এর কনটেন্ট দিয়ে আপনার প্রজে
 `app/Console/Kernel.php`-এর `schedule()` মেথডে যোগ করতে হবে।
 
 ### ৫. `.env` ফাইলে ডাটাবেজ কনফিগার করুন
-
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -403,7 +388,6 @@ DB_PASSWORD=your_db_password
 
 যেকোনো SMTP প্রোভাইডার ব্যবহার করতে পারেন (Gmail, cPanel/hosting mail, SendGrid,
 Mailgun, ইত্যাদি)। cPanel hosting-এর সাধারণ উদাহরণ:
-
 ```env
 MAIL_MAILER=smtp
 MAIL_HOST=mail.ridneeltradeinternational.com
@@ -414,7 +398,6 @@ MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS=noreply@ridneeltradeinternational.com
 MAIL_FROM_NAME="Ridneel DMS ERP"
 ```
-
 Gmail ব্যবহার করতে চাইলে: `MAIL_HOST=smtp.gmail.com`, `MAIL_PORT=587`,
 `MAIL_USERNAME`-এ আপনার Gmail address, আর `MAIL_PASSWORD`-এ সাধারণ পাসওয়ার্ড নয় —
 Google Account-এর **App Password** ব্যবহার করতে হবে (2-Step Verification চালু থাকলে
@@ -424,19 +407,16 @@ Google Account → Security → App Passwords থেকে বানানো �
 যাচাই করে নিন।
 
 ### ৭. `config/app.php`-এ locale ঠিক করুন
-
 ```php
 'locale' => 'bn',
 'fallback_locale' => 'en',
 ```
 
 ### ৮. Migrate ও Seed করুন
-
 ```bash
 php artisan migrate
 php artisan db:seed
 ```
-
 (আগে থেকে migrate করা থাকলে, শুধু `php artisan migrate` আবার চালালেই নতুন টেবিলগুলো
 তৈরি হয়ে যাবে — পুরনো ডেটা মুছে যাবে না। প্রয়োজনমতো আলাদাভাবে সিড করতে:
 `php artisan db:seed --class=RolePermissionSeeder`,
@@ -444,23 +424,19 @@ php artisan db:seed
 `php artisan db:seed --class=NotificationSettingSeeder`)
 
 এটি চলার পর একটি ডিফল্ট Super Admin তৈরি হবে:
-
 ```
 Email: admin@ridneeltrade.com
 Password: ChangeMe@123
 ```
-
 **⚠️ প্রথম লগইনের পরেই এই পাসওয়ার্ড অবশ্যই পরিবর্তন করুন।**
 (Password change ফিচার Phase 1-এ user নিজে edit করতে পারবে না — এটা ইচ্ছাকৃতভাবে Admin →
 Users → Edit থেকে করতে হবে; self-service "profile settings" পেজ ছোট addition হিসেবে
 পরের মেসেজেই চাইলে যোগ করে দিতে পারি।)
 
 ### ৯. Storage link তৈরি করুন (Phase 4-এর attendance ছবি দেখানোর জন্য আবশ্যক)
-
 ```bash
 php artisan storage:link
 ```
-
 এটি না চালালে Attendance Report-এ ছবির thumbnail দেখাবে না (ছবি সংরক্ষিত হবে, শুধু
 ব্রাউজারে দেখানো যাবে না)।
 
@@ -468,19 +444,15 @@ php artisan storage:link
 
 সব ইমেইল queue-তে যায় (synchronous ভাবে না, যাতে Sale/Purchase সেভ করার সময় ধীরগতি
 না হয়)। `.env`-এ:
-
 ```env
 QUEUE_CONNECTION=database
 ```
-
 তারপর:
-
 ```bash
 php artisan queue:table
 php artisan migrate
 php artisan queue:work --daemon
 ```
-
 প্রোডাকশনে এই `queue:work` প্রসেসটা সবসময় চালু রাখতে হবে — [Supervisor](https://laravel.com/docs/queues#supervisor-configuration)
 দিয়ে চালানো সবচেয়ে নির্ভরযোগ্য উপায় (cPanel hosting হলে "Setup Node.js/Python App" এর
 পাশে অনেক hosting-এ "Cron Job" দিয়েও `queue:work --stop-when-empty` প্রতি মিনিটে চালানো
@@ -491,21 +463,17 @@ SMTP সার্ভার ধীরগতির হলে Sale/Purchase সে�
 ### ১১. Scheduler-এর জন্য Cron Job বসান (Daily Summary / Overdue Reminder / Backup-এর জন্য)
 
 আপনার সার্ভারে crontab-এ এই একটি লাইন যোগ করুন (cPanel হলে "Cron Jobs" থেকে):
-
 ```
 * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
 ```
-
 এটি Laravel-এর নিজস্ব scheduler চালু করবে, যেটা Step ৪-এ রেজিস্টার করা তিনটা কমান্ড
-তাদের নির্ধারিত সময়ে নিজে থেকে চালাবে: `app:send-daily-summary` (রাত ১১:৫০),
+তাদের নির্ধারিত সময়ে নিজে থেকে চালাবে: `app:send-daily-summary` (রাত ১১:৫০), 
 `app:send-overdue-reminders` (সকাল ৯টা), ও `app:backup-database` (রাত ২টা)।
 
 ### ১২. সার্ভার চালু করুন
-
 ```bash
 php artisan serve
 ```
-
 ব্রাউজারে যান: `http://127.0.0.1:8000`
 
 (লোকাল ডেভেলপমেন্টে Step ১০-১১ ঐচ্ছিক — `QUEUE_CONNECTION=sync` রেখে এবং কমান্ড দুটো
@@ -515,20 +483,20 @@ php artisan serve
 
 ## Folder এ কী কী ফাইল আছে তার সারাংশ (Phase 1–9 মিলিয়ে, সম্পূর্ণ প্রজেক্ট — ১৬৮ ফাইল)
 
-| এরিয়া             | ফাইল সংখ্যা | নোট                                                                                                                                                                                                                                                                                 |
-| ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Controllers        | 28          | Auth, Dashboard, Language, Profile, Admin (Role/User/NotificationSetting/Backup), Inventory (5), Partners, Sales, Sr (3), Accounting (5), Purchases, Returns, Kpi (2)                                                                                                               |
-| Middleware         | 2           | CheckPermission, SetLocale (এখন auto-registered, দেখুন বাগ ফিক্স সেকশন)                                                                                                                                                                                                             |
-| Models             | 23          | User, Role, Category, Unit, Warehouse, Product, Partner, StockMovement, Sale, SaleItem, PartnerTransaction, SrFaceProfile, SrAttendance, SrLocation, AccountHead, Expense, Purchase, PurchaseItem, ReturnTransaction, ReturnItem, SalesTarget, NotificationSetting, NotificationLog |
-| Migrations         | 27          | Phase 1 থেকে 9 পর্যন্ত সব টেবিল/কলাম পরিবর্তন                                                                                                                                                                                                                                       |
-| Seeders            | 4           | RolePermissionSeeder, AccountHeadSeeder, NotificationSettingSeeder, DatabaseSeeder                                                                                                                                                                                                  |
-| Services           | 3           | NotificationDispatcher (email+SMS উভয়ের জন্য), SmsDispatcher, DatabaseBackupService                                                                                                                                                                                                |
-| Support            | 2           | Permissions (রোল সিস্টেম), CsvExporter                                                                                                                                                                                                                                              |
-| Mail               | 1           | SystemNotificationMail — একটাই reusable Mailable, ভিন্ন ভিন্ন Blade ভিউ দিয়ে প্রতিটা ইমেইল টাইপ                                                                                                                                                                                    |
-| Console Commands   | 3           | SendDailySummary, SendOverdueReminders, RunDatabaseBackup (সবগুলো scheduled)                                                                                                                                                                                                        |
-| Views (.blade.php) | 63          | layout/sidebar/topbar, প্রতিটি মডিউলের CRUD/ইনভয়েস/রিপোর্ট/print, emails/, profile/, admin/backups/, barcode-label                                                                                                                                                                 |
-| Language files     | 2           | `lang/bn/app.php`, `lang/en/app.php` — প্রতিটিতে ৪১১টি স্ট্রিং, এক্স্যাক্ট মিরর                                                                                                                                                                                                     |
-| CSS/JS             | 2           | dark-mode-aware theme + toggle/sidebar behaviour (বাকি সব JS ভিউর ভেতরেই `@push('scripts')` দিয়ে লেখা)                                                                                                                                                                             |
+| এরিয়া | ফাইল সংখ্যা | নোট |
+|---|---|---|
+| Controllers | 28 | Auth, Dashboard, Language, Profile, Admin (Role/User/NotificationSetting/Backup), Inventory (5), Partners, Sales, Sr (3), Accounting (5), Purchases, Returns, Kpi (2) |
+| Middleware | 2 | CheckPermission, SetLocale (এখন auto-registered, দেখুন বাগ ফিক্স সেকশন) |
+| Models | 23 | User, Role, Category, Unit, Warehouse, Product, Partner, StockMovement, Sale, SaleItem, PartnerTransaction, SrFaceProfile, SrAttendance, SrLocation, AccountHead, Expense, Purchase, PurchaseItem, ReturnTransaction, ReturnItem, SalesTarget, NotificationSetting, NotificationLog |
+| Migrations | 27 | Phase 1 থেকে 9 পর্যন্ত সব টেবিল/কলাম পরিবর্তন |
+| Seeders | 4 | RolePermissionSeeder, AccountHeadSeeder, NotificationSettingSeeder, DatabaseSeeder |
+| Services | 3 | NotificationDispatcher (email+SMS উভয়ের জন্য), SmsDispatcher, DatabaseBackupService |
+| Support | 2 | Permissions (রোল সিস্টেম), CsvExporter |
+| Mail | 1 | SystemNotificationMail — একটাই reusable Mailable, ভিন্ন ভিন্ন Blade ভিউ দিয়ে প্রতিটা ইমেইল টাইপ |
+| Console Commands | 3 | SendDailySummary, SendOverdueReminders, RunDatabaseBackup (সবগুলো scheduled) |
+| Views (.blade.php) | 63 | layout/sidebar/topbar, প্রতিটি মডিউলের CRUD/ইনভয়েস/রিপোর্ট/print, emails/, profile/, admin/backups/, barcode-label |
+| Language files | 2 | `lang/bn/app.php`, `lang/en/app.php` — প্রতিটিতে ৪১১টি স্ট্রিং, এক্স্যাক্ট মিরর |
+| CSS/JS | 2 | dark-mode-aware theme + toggle/sidebar behaviour (বাকি সব JS ভিউর ভেতরেই `@push('scripts')` দিয়ে লেখা) |
 
 ---
 

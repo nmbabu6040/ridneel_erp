@@ -27,8 +27,9 @@
     <div class="stat-card">
         <div class="row mb-4">
             <div class="col-md-6">
-                <h5 class="fw-bold mb-1">{{ __('app.app_name') }}</h5>
-                <div class="small text-secondary">Ridneel Trade International</div>
+                <h5 class="fw-bold mb-1">{{ $companySettings->displayName() }}</h5>
+                @if ($companySettings->address)<div class="small text-secondary">{{ $companySettings->address }}</div>@endif
+                @if ($companySettings->phone)<div class="small text-secondary">{{ $companySettings->phone }}</div>@endif
             </div>
             <div class="col-md-6 text-md-end">
                 <div><strong>{{ __('app.invoice_no') }}:</strong> {{ $sale->invoice_no }}</div>
@@ -84,6 +85,10 @@
 
         @if ($sale->note)
             <div class="mt-3 small text-secondary"><strong>{{ __('app.note') }}:</strong> {{ $sale->note }}</div>
+        @endif
+
+        @if ($companySettings->invoice_footer_note)
+            <div class="mt-3 pt-3 border-top small text-center text-secondary">{{ $companySettings->invoice_footer_note }}</div>
         @endif
 
         <div class="mt-4 small text-secondary no-print">{{ __('app.created_by') }}: {{ $sale->createdBy?->name }} · {{ $sale->created_at->format('d M Y, h:i A') }}</div>

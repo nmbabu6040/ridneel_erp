@@ -79,9 +79,19 @@ class SaleController extends Controller
         // a round-trip per keystroke. Fine at Phase-3 catalogue sizes;
         // swap for a cached stock-summary table if this grows large.
         $stockMap = [];
+        $batchMap = [];
         foreach ($products as $product) {
             foreach ($warehouses as $warehouse) {
                 $stockMap["{$product->id}_{$warehouse->id}"] = $product->currentStock($warehouse->id);
+
+                if ($product->tracks_batches) {
+                    $batchMap["{$product->id}_{$warehouse->id}"] = $product->availableBatches($warehouse->id)
+                        ->map(fn ($b) => [
+                            'batch_no' => $b->batch_no,
+                            'expiry'   => $b->expiry_date ? \Illuminate\Support\Carbon::parse($b->expiry_date)->format('d M Y') : null,
+                            'remaining' => (int) $b->remaining,
+                        ])->values();
+                }
             }
         }
 
@@ -91,6 +101,7 @@ class SaleController extends Controller
             'warehouses' => $warehouses,
             'products'   => $products,
             'stockMap'   => $stockMap,
+            'batchMap'   => $batchMap,
         ]);
     }
 
@@ -115,6 +126,8 @@ class SaleController extends Controller
             'unit_price.*'          => ['required', 'numeric', 'min:0'],
             'item_discount'         => ['nullable', 'array'],
             'item_discount.*'       => ['nullable', 'numeric', 'min:0'],
+            'batch_no'              => ['nullable', 'array'],
+            'batch_no.*'            => ['nullable', 'string', 'max:50'],
         ]);
 
         // Stock sufficiency check happens BEFORE anything is written —
@@ -151,6 +164,7 @@ class SaleController extends Controller
                     'unit_price' => $price,
                     'discount'   => $lineDisc,
                     'subtotal'   => $lineSub,
+                    'batch_no'   => $data['batch_no'][$i] ?? null,
                 ];
             }
 
@@ -183,6 +197,7 @@ class SaleController extends Controller
                     'warehouse_id' => $data['warehouse_id'],
                     'type'         => 'sales_out',
                     'quantity'     => -abs($line['quantity']),
+                    'batch_no'     => $line['batch_no'],
                     'reference_no' => $sale->invoice_no,
                     'note'         => __('app.sold_via_invoice') . ' ' . $sale->invoice_no,
                     'created_by'   => $request->user()->id,

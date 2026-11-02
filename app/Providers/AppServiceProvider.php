@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\CompanySetting;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,6 +16,19 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        /**
+         * Makes $companySettings available in every Blade view without
+         * each controller having to fetch and pass it explicitly — this
+         * is what lets the sidebar brand, login page, invoice headers
+         * and email header all show the admin-configured company name/
+         * logo/currency instead of a hardcoded one, which is the whole
+         * point of Company Settings: making this system usable for any
+         * product business, not just this one.
+         */
+        View::composer('*', function ($view) {
+            $view->with('companySettings', CompanySetting::current());
+        });
+
         /**
          * Every @can('permission.key') / $user->can('permission.key') call
          * anywhere in the app (Blade, controllers, form requests) is routed

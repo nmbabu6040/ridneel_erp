@@ -6,6 +6,7 @@ use App\Http\Controllers\Accounting\LedgerController;
 use App\Http\Controllers\Accounting\ReportController;
 use App\Http\Controllers\Accounting\VoucherController;
 use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\Admin\CompanySettingController;
 use App\Http\Controllers\Admin\NotificationSettingController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
@@ -38,11 +39,7 @@ use Illuminate\Support\Facades\Route;
 | bottom of this file — keeping this file from growing unbounded.
 */
 
-
-
-
-
-Route::get('/', fn() => redirect()->route('login'));
+Route::get('/', fn () => redirect()->route('login'));
 
 Route::get('language/{locale}', [LanguageController::class, 'switch'])
     ->name('language.switch');
@@ -115,6 +112,11 @@ Route::middleware('auth')->group(function () {
         Route::post('test', [NotificationSettingController::class, 'sendTest'])->name('test');
     });
 
+    Route::prefix('admin/settings')->name('admin.settings.')->middleware('permission:settings.manage')->group(function () {
+        Route::get('company', [CompanySettingController::class, 'edit'])->name('company.edit');
+        Route::put('company', [CompanySettingController::class, 'update'])->name('company.update');
+    });
+
     Route::prefix('admin/backups')->name('admin.backups.')->middleware('permission:settings.manage')->group(function () {
         Route::get('/', [BackupController::class, 'index'])->name('index');
         Route::post('/', [BackupController::class, 'store'])->name('store');
@@ -145,6 +147,7 @@ Route::middleware('auth')->group(function () {
         Route::middleware('permission:stock.view')->group(function () {
             Route::get('stock', [StockController::class, 'index'])->name('stock.index');
             Route::get('stock/export/csv', [StockController::class, 'export'])->name('stock.export');
+            Route::get('expiry-report', [StockController::class, 'expiryReport'])->name('expiry-report');
         });
         Route::middleware('permission:stock.adjust')->group(function () {
             Route::get('stock/create', [StockController::class, 'create'])->name('stock.create');

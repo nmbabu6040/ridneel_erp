@@ -139,7 +139,52 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
+  transition: transform .25s ease;
 }
+
+/* ---------- Dashboard: hover-animated stat cards ---------- */
+.stat-animate {
+  border-inline-start: 3px solid transparent;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.stat-animate:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.09);
+}
+.stat-animate:hover .stat-icon {
+  transform: scale(1.08) rotate(-4deg);
+}
+.stat-animate.accent-primary:hover { border-inline-start-color: var(--brand-primary); }
+.stat-animate.accent-success:hover { border-inline-start-color: var(--brand-success); }
+.stat-animate.accent-warning:hover { border-inline-start-color: var(--brand-warning); }
+.stat-animate.accent-danger:hover  { border-inline-start-color: var(--brand-danger); }
+.stat-animate.accent-info:hover    { border-inline-start-color: #0dcaf0; }
+
+/* ---------- Dashboard: welcome banner ---------- */
+.welcome-banner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  padding: 1.75rem 1.75rem;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, #6f42c1 100%);
+  box-shadow: 0 .5rem 1.5rem rgba(13,110,253,.25);
+}
+.welcome-banner-glow {
+  position: absolute;
+  inset: -40% -10% auto auto;
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, rgba(255,255,255,.22) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: banner-float 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes banner-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-16px, 16px) scale(1.08); }
+}
+
+/* ---------- Dashboard: chart cards ---------- */
+.chart-card canvas { max-width: 100%; }
 
 /* ---------- Auth (login) screen ---------- */
 .auth-wrapper {

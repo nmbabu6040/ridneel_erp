@@ -76,6 +76,12 @@
                 </div>
             </div>
 
+            <div class="mb-2 form-check form-switch">
+                <input type="checkbox" class="form-check-input" id="tracks_batches" name="tracks_batches" value="1" {{ old('tracks_batches', $product->tracks_batches) ? 'checked' : '' }}>
+                <label class="form-check-label" for="tracks_batches">{{ __('app.tracks_batches') }}</label>
+                <div class="form-text">{{ __('app.tracks_batches_hint') }}</div>
+            </div>
+
             <div class="mb-4 form-check form-switch">
                 <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="1" {{ old('is_active', $product->exists ? $product->is_active : true) ? 'checked' : '' }}>
                 <label class="form-check-label" for="is_active">{{ __('app.status_active') }}</label>

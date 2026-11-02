@@ -11,13 +11,14 @@ class StockMovement extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id', 'warehouse_id', 'type', 'quantity',
+        'product_id', 'warehouse_id', 'type', 'quantity', 'batch_no', 'expiry_date',
         'unit_cost', 'reference_no', 'note', 'created_by',
     ];
 
     protected $casts = [
-        'quantity'  => 'integer',
-        'unit_cost' => 'decimal:2',
+        'quantity'    => 'integer',
+        'unit_cost'   => 'decimal:2',
+        'expiry_date' => 'date',
     ];
 
     /** Movement types whose quantity must be stored as positive (stock in). */

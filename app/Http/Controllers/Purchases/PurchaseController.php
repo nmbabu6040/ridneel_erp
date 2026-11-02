@@ -86,6 +86,10 @@ class PurchaseController extends Controller
             'unit_cost.*'          => ['required', 'numeric', 'min:0'],
             'item_discount'        => ['nullable', 'array'],
             'item_discount.*'      => ['nullable', 'numeric', 'min:0'],
+            'batch_no'             => ['nullable', 'array'],
+            'batch_no.*'           => ['nullable', 'string', 'max:50'],
+            'expiry_date'          => ['nullable', 'array'],
+            'expiry_date.*'        => ['nullable', 'date'],
         ]);
 
         $purchase = DB::transaction(function () use ($data, $request) {
@@ -100,11 +104,13 @@ class PurchaseController extends Controller
                 $subtotal += $lineSub;
 
                 $lineData[] = [
-                    'product_id' => $productId,
-                    'quantity'   => $qty,
-                    'unit_cost'  => $cost,
-                    'discount'   => $lineDisc,
-                    'subtotal'   => $lineSub,
+                    'product_id'  => $productId,
+                    'quantity'    => $qty,
+                    'unit_cost'   => $cost,
+                    'discount'    => $lineDisc,
+                    'subtotal'    => $lineSub,
+                    'batch_no'    => $data['batch_no'][$i] ?? null,
+                    'expiry_date' => $data['expiry_date'][$i] ?? null,
                 ];
             }
 
@@ -137,6 +143,8 @@ class PurchaseController extends Controller
                     'warehouse_id' => $data['warehouse_id'],
                     'type'         => 'purchase_in',
                     'quantity'     => abs($line['quantity']),
+                    'batch_no'     => $line['batch_no'],
+                    'expiry_date'  => $line['expiry_date'],
                     'unit_cost'    => $line['unit_cost'],
                     'reference_no' => $purchase->invoice_no,
                     'note'         => __('app.purchased_via') . ' ' . $purchase->invoice_no,

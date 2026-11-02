@@ -118,10 +118,12 @@ class ProductController extends Controller
             'purchase_price' => ['required', 'numeric', 'min:0'],
             'sale_price'     => ['required', 'numeric', 'min:0'],
             'reorder_level'  => ['required', 'integer', 'min:0'],
+            'tracks_batches' => ['nullable', 'boolean'],
             'is_active'      => ['nullable', 'boolean'],
         ]);
 
-        $data['is_active'] = $request->boolean('is_active');
+        $data['is_active']      = $request->boolean('is_active');
+        $data['tracks_batches'] = $request->boolean('tracks_batches');
 
         return $data;
     }

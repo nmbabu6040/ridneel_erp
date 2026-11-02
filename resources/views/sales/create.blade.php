@@ -62,6 +62,7 @@
                             <th style="width:100px">{{ __('app.quantity') }}</th>
                             <th style="width:120px">{{ __('app.unit_price') }}</th>
                             <th style="width:110px">{{ __('app.discount') }}</th>
+                            <th style="width:150px">{{ __('app.batch_no') }}</th>
                             <th style="width:120px" class="text-end">{{ __('app.subtotal') }}</th>
                             <th style="width:40px"></th>
                         </tr>
@@ -114,6 +115,7 @@
     $productsForJs = $products->map(fn ($p) => [
         'id' => $p->id, 'name' => $p->name, 'sku' => $p->sku, 'barcode' => $p->barcode,
         'price' => (float) $p->sale_price, 'unit' => $p->unit?->short_code,
+        'tracksBatches' => (bool) $p->tracks_batches,
     ])->values();
 @endphp
 
@@ -122,6 +124,7 @@
 (function () {
     var products = @json($productsForJs);
     var stockMap = @json($stockMap);
+    var batchMap = @json($batchMap);
 
     var tbody = document.getElementById('items-body');
     var warehouseSelect = document.getElementById('warehouse_id');
@@ -141,8 +144,10 @@
 
         var options = '<option value="">{{ __("app.select") }}</option>';
         products.forEach(function (p) {
-            options += '<option value="' + p.id + '" data-price="' + p.price + '" data-unit="' + (p.unit || '') + '">' + p.name + ' (' + p.sku + ')</option>';
+            options += '<option value="' + p.id + '" data-price="' + p.price + '" data-unit="' + (p.unit || '') + '" data-tracks="' + (p.tracksBatches ? 1 : 0) + '">' + p.name + ' (' + p.sku + ')</option>';
         });
+
+        var listId = 'batch-list-' + rowCount;
 
         tr.innerHTML =
             '<td><select class="form-select form-select-sm product-select" name="product_id[]" required>' + options + '</select></td>' +
@@ -150,6 +155,11 @@
             '<td><input type="number" min="1" class="form-control form-control-sm qty-input" name="quantity[]" value="1" required></td>' +
             '<td><input type="number" step="0.01" min="0" class="form-control form-control-sm price-input" name="unit_price[]" required></td>' +
             '<td><input type="number" step="0.01" min="0" class="form-control form-control-sm disc-input" name="item_discount[]" value="0"></td>' +
+            '<td class="batch-cell d-none">' +
+                '<input type="text" class="form-control form-control-sm batch-input" name="batch_no[]" list="' + listId + '" placeholder="{{ __("app.batch_no") }}">' +
+                '<datalist id="' + listId + '"></datalist>' +
+                '<div class="batch-hint small text-secondary"></div>' +
+            '</td>' +
             '<td class="text-end row-subtotal">0.00</td>' +
             '<td><button type="button" class="btn btn-sm btn-outline-danger remove-row"><i class="bi bi-x"></i></button></td>';
 
@@ -163,11 +173,16 @@
         var price = tr.querySelector('.price-input');
         var disc = tr.querySelector('.disc-input');
         var availableCell = tr.querySelector('.available-cell');
+        var batchCell = tr.querySelector('.batch-cell');
+        var batchList = tr.querySelector('datalist');
+        var batchHint = tr.querySelector('.batch-hint');
 
         function onProductChange() {
             var opt = select.options[select.selectedIndex];
             price.value = opt.dataset.price || 0;
+            batchCell.classList.toggle('d-none', opt.dataset.tracks !== '1');
             updateAvailable();
+            updateBatches();
             recalc();
         }
 
@@ -179,6 +194,32 @@
             } else {
                 availableCell.classList.remove('text-danger', 'fw-semibold');
             }
+        }
+
+        // FEFO hint: list every batch of this product still in stock at
+        // the chosen warehouse (soonest-expiry first, since batchMap is
+        // already ordered that way server-side), as a <datalist> the
+        // staff can pick from, plus a plain-text hint naming the
+        // earliest-expiring one so the "sell this one first" choice is
+        // obvious without forcing it.
+        function updateBatches() {
+            batchList.innerHTML = '';
+            batchHint.textContent = '';
+            var wid = warehouseSelect.value;
+            var pid = select.value;
+            if (!wid || !pid) return;
+            var batches = batchMap[pid + '_' + wid];
+            if (!batches || !batches.length) return;
+
+            batches.forEach(function (b) {
+                var opt = document.createElement('option');
+                opt.value = b.batch_no;
+                opt.label = b.batch_no + ' — ' + b.remaining + ' {{ __("app.units_left") }}' + (b.expiry ? ', {{ __("app.expires") }} ' + b.expiry : '');
+                batchList.appendChild(opt);
+            });
+
+            var earliest = batches[0];
+            batchHint.textContent = '{{ __("app.suggested") }}: ' + earliest.batch_no + (earliest.expiry ? ' (' + earliest.expiry + ')' : '');
         }
 
         select.addEventListener('change', onProductChange);

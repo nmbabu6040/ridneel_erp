@@ -20,10 +20,10 @@
 
             <div class="mb-3">
                 <label class="form-label">{{ __('app.product') }}</label>
-                <select name="product_id" class="form-select @error('product_id') is-invalid @enderror" required>
+                <select name="product_id" id="stock-product-select" class="form-select @error('product_id') is-invalid @enderror" required>
                     <option value="">{{ __('app.select') }}</option>
                     @foreach ($products as $p)
-                        <option value="{{ $p->id }}" {{ (int) old('product_id') === $p->id ? 'selected' : '' }}>{{ $p->name }} ({{ $p->sku }})</option>
+                        <option value="{{ $p->id }}" data-tracks="{{ $p->tracks_batches ? 1 : 0 }}" {{ (int) old('product_id') === $p->id ? 'selected' : '' }}>{{ $p->name }} ({{ $p->sku }})</option>
                     @endforeach
                 </select>
                 @error('product_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -53,6 +53,17 @@
                 </div>
             </div>
 
+            <div class="row g-3 mb-3 d-none" id="batch-fields">
+                <div class="col-md-6">
+                    <label class="form-label">{{ __('app.batch_no') }}</label>
+                    <input type="text" name="batch_no" class="form-control" value="{{ old('batch_no') }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ __('app.expiry_date') }}</label>
+                    <input type="date" name="expiry_date" class="form-control" value="{{ old('expiry_date') }}">
+                </div>
+            </div>
+
             <div class="mb-4">
                 <label class="form-label">{{ __('app.note') }}</label>
                 <textarea name="note" class="form-control" rows="2">{{ old('note') }}</textarea>
@@ -65,3 +76,16 @@
         </form>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    var select = document.getElementById('stock-product-select');
+    var fields = document.getElementById('batch-fields');
+    select.addEventListener('change', function () {
+        var opt = select.options[select.selectedIndex];
+        fields.classList.toggle('d-none', opt.dataset.tracks !== '1');
+    });
+})();
+</script>
+@endpush
