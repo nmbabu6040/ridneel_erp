@@ -12,18 +12,9 @@ class CompanySetting extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'name_bn',
-        'tagline',
-        'logo_path',
-        'favicon_emoji',
-        'address',
-        'phone',
-        'email',
-        'website',
-        'currency_symbol',
-        'currency_code',
-        'invoice_footer_note',
+        'name', 'name_bn', 'tagline', 'logo_path', 'favicon_emoji',
+        'address', 'phone', 'email', 'website',
+        'currency_symbol', 'currency_code', 'invoice_footer_note',
     ];
 
     /**
@@ -39,18 +30,11 @@ class CompanySetting extends Model
         return Cache::remember('company_settings', 300, function () {
             if (!Schema::hasTable('company_settings')) {
                 return new self([
-                    'name' => 'My Company',
-                    'currency_symbol' => '৳',
-                    'favicon_emoji' => '🏢',
+                    'name' => 'My Company', 'currency_symbol' => '৳', 'favicon_emoji' => '🏢',
                 ]);
             }
 
-            return self::first() ?? self::create([
-                'name' => 'My Company',
-                'currency_symbol' => '৳',
-                'currency_code' => 'BDT',
-                'favicon_emoji' => '',
-            ]);
+            return self::first() ?? self::create(['name' => 'My Company']);
         });
     }
 

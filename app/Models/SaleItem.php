@@ -10,7 +10,7 @@ class SaleItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sale_id', 'product_id', 'quantity', 'batch_no', 'unit_price', 'discount', 'subtotal'];
+    protected $fillable = ['sale_id', 'product_id', 'unit_id', 'quantity', 'base_quantity', 'batch_no', 'unit_price', 'discount', 'subtotal'];
 
     protected $casts = [
         'quantity'   => 'integer',
@@ -27,5 +27,17 @@ class SaleItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /** The unit this line was sold in — null means the product's base unit. */
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
+    /** Display-friendly unit label — falls back to the product's base unit when this line didn't use a secondary unit. */
+    public function unitLabel(): ?string
+    {
+        return $this->unit?->short_code ?? $this->product?->unit?->short_code;
     }
 }

@@ -10,7 +10,7 @@ class PurchaseItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['purchase_id', 'product_id', 'quantity', 'batch_no', 'expiry_date', 'unit_cost', 'discount', 'subtotal'];
+    protected $fillable = ['purchase_id', 'product_id', 'unit_id', 'quantity', 'base_quantity', 'batch_no', 'expiry_date', 'unit_cost', 'discount', 'subtotal'];
 
     protected $casts = [
         'quantity'    => 'integer',
@@ -28,5 +28,15 @@ class PurchaseItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
+    public function unitLabel(): ?string
+    {
+        return $this->unit?->short_code ?? $this->product?->unit?->short_code;
     }
 }

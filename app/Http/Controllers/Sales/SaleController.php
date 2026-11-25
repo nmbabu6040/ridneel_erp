@@ -71,7 +71,7 @@ class SaleController extends Controller
         $this->authorizeType($request, $type);
 
         $partnerType = $type === 'primary' ? 'dealer' : 'retailer';
-        $products    = Product::with('unit')->where('is_active', true)->orderBy('name')->get();
+        $products    = Product::with(['unit', 'secondaryUnit'])->where('is_active', true)->orderBy('name')->get();
         $warehouses  = Warehouse::where('is_active', true)->orderBy('name')->get();
 
         // Small pre-computed product x warehouse stock map so the create
@@ -128,14 +128,21 @@ class SaleController extends Controller
             'item_discount.*'       => ['nullable', 'numeric', 'min:0'],
             'batch_no'              => ['nullable', 'array'],
             'batch_no.*'            => ['nullable', 'string', 'max:50'],
+            'unit_id'               => ['nullable', 'array'],
+            'unit_id.*'             => ['nullable', 'exists:units,id'],
         ]);
 
         // Stock sufficiency check happens BEFORE anything is written —
         // partial invoices (some items ok, some not) must never happen.
+        // Converted to base units first: a line entered in a secondary
+        // unit (e.g. "2 Carton") must be checked as 200 Pieces against
+        // base-unit stock, not as a raw "2" — otherwise an oversold
+        // invoice could slip through.
         $shortages = [];
         foreach ($data['product_id'] as $i => $productId) {
-            $product   = Product::findOrFail($productId);
-            $requested = (int) $data['quantity'][$i];
+            $product = Product::findOrFail($productId);
+            $isSecondaryUnit = !empty($data['unit_id'][$i]) && (int) $data['unit_id'][$i] === $product->secondary_unit_id;
+            $requested = $product->toBaseQuantity((float) $data['quantity'][$i], $isSecondaryUnit);
             $available = $product->currentStock($data['warehouse_id']);
 
             if ($requested > $available) {
@@ -152,19 +159,25 @@ class SaleController extends Controller
             $lineData = [];
 
             foreach ($data['product_id'] as $i => $productId) {
-                $qty      = (int) $data['quantity'][$i];
+                $product  = Product::find($productId);
+                $qty      = (int) $data['quantity'][$i]; // stays in whichever unit was entered — see unit_id below
                 $price    = (float) $data['unit_price'][$i];
                 $lineDisc = (float) ($data['item_discount'][$i] ?? 0);
                 $lineSub  = ($qty * $price) - $lineDisc;
                 $subtotal += $lineSub;
 
+                $unitId = $data['unit_id'][$i] ?? null;
+                $isSecondaryUnit = $unitId && (int) $unitId === $product->secondary_unit_id;
+
                 $lineData[] = [
-                    'product_id' => $productId,
-                    'quantity'   => $qty,
-                    'unit_price' => $price,
-                    'discount'   => $lineDisc,
-                    'subtotal'   => $lineSub,
-                    'batch_no'   => $data['batch_no'][$i] ?? null,
+                    'product_id'    => $productId,
+                    'unit_id'       => $unitId,
+                    'quantity'      => $qty,
+                    'base_quantity' => $product->toBaseQuantity((float) $qty, $isSecondaryUnit), // what actually moves in the stock ledger
+                    'unit_price'    => $price,
+                    'discount'      => $lineDisc,
+                    'subtotal'      => $lineSub,
+                    'batch_no'      => $data['batch_no'][$i] ?? null,
                 ];
             }
 
@@ -196,7 +209,7 @@ class SaleController extends Controller
                     'product_id'   => $line['product_id'],
                     'warehouse_id' => $data['warehouse_id'],
                     'type'         => 'sales_out',
-                    'quantity'     => -abs($line['quantity']),
+                    'quantity'     => -abs($line['base_quantity']), // always base-unit — see SaleItem::quantity for the as-entered amount
                     'batch_no'     => $line['batch_no'],
                     'reference_no' => $sale->invoice_no,
                     'note'         => __('app.sold_via_invoice') . ' ' . $sale->invoice_no,
@@ -257,7 +270,10 @@ class SaleController extends Controller
                     'product_id'   => $item->product_id,
                     'warehouse_id' => $sale->warehouse_id,
                     'type'         => 'adjustment_in',
-                    'quantity'     => abs($item->quantity),
+                    // base_quantity, not quantity — quantity may be in a
+                    // secondary unit (e.g. "2" meaning 2 Cartons); the
+                    // stock ledger always deals in base units.
+                    'quantity'     => abs($item->base_quantity ?? $item->quantity),
                     'reference_no' => $sale->invoice_no,
                     'note'         => __('app.cancelled_invoice') . ' ' . $sale->invoice_no,
                     'created_by'   => $request->user()->id,
